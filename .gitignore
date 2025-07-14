@@ -1,2 +1,7 @@
 cmake-build-debug
 target
+CMakeFiles
+CMakeCache.txt
+Makefile
+ps
+cmake_install.cmake
