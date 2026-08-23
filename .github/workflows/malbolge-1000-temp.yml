@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - tmp-malbolge-1000-ci
+    paths:
+      - 'malbolge-1000.patch'
+      - '.github/workflows/malbolge-1000-temp.yml'
+
+permissions:
+  contents: write
 
 jobs:
   build-and-test:
@@ -12,71 +18,71 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install assembler dependencies
+      - name: Assemble and execute tests
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y flex bison
+          set +e
+          (
+            set -euxo pipefail
+            sudo apt-get update
+            sudo apt-get install -y flex bison
 
-      - name: Build LMAO and patch adder
-        run: |
-          set -euxo pipefail
-          git clone --depth 1 https://github.com/esoteric-programmer/LMAO.git LMAO
-          patch LMAO/example_adder.hell < malbolge-1000.patch
-          make -C LMAO
-          ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell | tee assemble.log
-          cp LMAO/example_adder.hell adder_0_to_1000.hell
-          wc -c adder_0_to_1000.mb | tee -a assemble.log
-          python3 - <<'PY' | tee -a assemble.log
+            git clone --depth 1 https://github.com/esoteric-programmer/LMAO.git LMAO
+            patch LMAO/example_adder.hell < malbolge-1000.patch
+            make -C LMAO
+            ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell | tee assemble.log
+            cp LMAO/example_adder.hell adder_0_to_1000.hell
+            wc -c adder_0_to_1000.mb | tee -a assemble.log
+            python3 - <<'PY' | tee -a assemble.log
           p = open('adder_0_to_1000.mb', 'rb').read()
           q = b''.join(p.split())
           print('non_whitespace_cells=', len(q))
           assert len(q) <= 59049, len(q)
           PY
 
-      - name: Build reference Malbolge interpreter
+            git clone --depth 1 https://github.com/TryItOnline/malbolge.git malbolge-interpreter
+            gcc -O2 malbolge-interpreter/malbolge.c -o malbolge
+
+            : > test.log
+            run_case() {
+              input="$1"
+              expected="$2"
+              echo "CASE: $input -> $expected" | tee -a test.log
+              actual=$(printf '%s\n' "$input" | timeout 300 ./malbolge adder_0_to_1000.mb)
+              status=$?
+              printf '  exit=%s actual=<%s>\n' "$status" "$actual" | tee -a test.log
+              if [ "$status" -ne 0 ] || [ "$actual" != "$expected" ]; then
+                echo "FAILED" | tee -a test.log
+                return 1
+              fi
+            }
+            run_case '0 0' '0'
+            run_case '1 2' '3'
+            run_case '10 20' '30'
+            run_case '999 999' '1998'
+            run_case '10 1000' '1010'
+            run_case '1000 10' '1010'
+            run_case '0 1000' '1000'
+            run_case '1000 0' '1000'
+            run_case '999 1000' '1999'
+            run_case '1000 999' '1999'
+            run_case '1000 1000' '2000'
+          ) > >(tee ci.log) 2>&1
+          status=$?
+          echo "$status" > ci-status.txt
+          exit 0
+
+      - name: Commit result to temporary branch
+        if: always()
+        shell: bash
         run: |
           set -euxo pipefail
-          git clone --depth 1 https://github.com/TryItOnline/malbolge.git malbolge-interpreter
-          gcc -O2 malbolge-interpreter/malbolge.c -o malbolge
-
-      - name: Run regression and boundary tests
-        run: |
-          set -euo pipefail
-          : > test.log
-          run_case() {
-            input="$1"
-            expected="$2"
-            echo "CASE: $input -> $expected" | tee -a test.log
-            set +e
-            actual=$(printf '%s\n' "$input" | timeout 300 ./malbolge adder_0_to_1000.mb)
-            status=$?
-            set -e
-            printf '  exit=%s actual=<%s>\n' "$status" "$actual" | tee -a test.log
-            if [ "$status" -ne 0 ] || [ "$actual" != "$expected" ]; then
-              echo "FAILED" | tee -a test.log
-              exit 1
-            fi
-          }
-          run_case '0 0' '0'
-          run_case '1 2' '3'
-          run_case '10 20' '30'
-          run_case '999 999' '1998'
-          run_case '10 1000' '1010'
-          run_case '1000 10' '1010'
-          run_case '0 1000' '1000'
-          run_case '1000 0' '1000'
-          run_case '999 1000' '1999'
-          run_case '1000 999' '1999'
-          run_case '1000 1000' '2000'
-
-      - name: Upload verified program
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: malbolge-1000-result
-          path: |
-            adder_0_to_1000.mb
-            adder_0_to_1000.hell
-            assemble.log
-            test.log
-          if-no-files-found: warn
+          mkdir -p malbolge-ci-result
+          for f in adder_0_to_1000.mb adder_0_to_1000.hell assemble.log test.log ci.log ci-status.txt; do
+            if [ -f "$f" ]; then cp "$f" malbolge-ci-result/; fi
+          done
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add malbolge-ci-result
+          git commit -m 'temp: Malbolge verification result [skip ci]' || exit 0
+          git push origin HEAD:tmp-malbolge-1000-ci
