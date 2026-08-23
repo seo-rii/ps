@@ -1,0 +1,6 @@
+This is LMAO v0.5.6b (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
+Malbolge code written to baseline.mb
+Debugging information written to baseline.dbg
+55725 baseline.mb
+55725 total
+baseline_non_whitespace_cells= 55724

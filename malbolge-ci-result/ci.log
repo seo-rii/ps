@@ -1,26 +1,26 @@
 + sudo apt-get update
 Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
 Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
 Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
 Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
 Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
-Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1227 kB]
-Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [286 kB]
-Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [180 kB]
-Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1687 kB]
-Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [337 kB]
-Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
-Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1483 kB]
-Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [339 kB]
-Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.8 kB]
-Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
-Get:19 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5772 B]
-Get:20 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
-Get:21 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [357 kB]
-Get:22 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [403 kB]
+Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [403 kB]
+Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [357 kB]
+Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1227 kB]
+Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [286 kB]
+Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [180 kB]
+Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1687 kB]
+Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [337 kB]
+Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1483 kB]
+Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [339 kB]
+Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.8 kB]
+Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Get:21 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5772 B]
+Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
 Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [967 kB]
 Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [205 kB]
 Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
@@ -30,7 +30,7 @@ Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Comp
 Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1385 kB]
 Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [320 kB]
 Get:31 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1408 B]
-Fetched 11.5 MB in 1s (8527 kB/s)
+Fetched 11.5 MB in 1s (8612 kB/s)
 Reading package lists...
 + sudo apt-get install -y flex bison libfl-dev
 Reading package lists...
@@ -48,7 +48,7 @@ After this operation, 114 kB of additional disk space will be used.
 Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 Get:2 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libfl2 amd64 2.6.4-8.2build1 [9768 B]
 Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libfl-dev amd64 2.6.4-8.2build1 [6250 B]
-Fetched 16.0 kB in 0s (113 kB/s)
+Fetched 16.0 kB in 0s (340 kB/s)
 Selecting previously unselected package libfl2:amd64.
 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 203124 files and directories currently installed.)
 Preparing to unpack .../libfl2_2.6.4-8.2build1_amd64.deb ...
@@ -91,8 +91,6 @@ Or undo this operation with:
 Turn off this advice by setting config variable advice.detachedHead to false
 
 HEAD is now at 859dc1e LMAO v0.5.6b
-+ patch LMAO/example_adder.hell
-patching file LMAO/example_adder.hell
 + make -C LMAO
 make: Entering directory '/home/runner/work/ps/ps/LMAO'
 make -C src/
@@ -123,8 +121,24 @@ make[1]: Leaving directory '/home/runner/work/ps/ps/LMAO/src'
 cp bin/lmao .
 make: Leaving directory '/home/runner/work/ps/ps/LMAO'
 + :
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
++ ./LMAO/lmao -d -o baseline.mb LMAO/example_adder.hell
++ tee -a baseline.log
+This is LMAO v0.5.6b (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
+Malbolge code written to baseline.mb
+Debugging information written to baseline.dbg
++ wc -c baseline.mb baseline.mb.dbg
++ tee -a baseline.log
+55725 baseline.mb
+55725 total
++ true
++ python3 -
++ tee -a baseline.log
+baseline_non_whitespace_cells= 55724
++ patch LMAO/example_adder.hell
+patching file LMAO/example_adder.hell
++ :
 + tee -a assemble.log
++ ./LMAO/lmao -d -o adder_0_to_1000.mb LMAO/example_adder.hell
 Error: Free space exceeded (Add Malbolge command).
 Internal error: Initialization code for memory cell 58716 could not be generated.
 Error: Free space exceeded (Add Malbolge command).
