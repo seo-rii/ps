@@ -27,22 +27,13 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y flex bison
             rm -rf LMAO malbolge-interpreter
-            git clone --depth 1 https://github.com/esoteric-programmer/LMAO.git LMAO
+            git clone https://github.com/esoteric-programmer/LMAO.git LMAO
+            git -C LMAO checkout 859dc1ebd191f09b18c0bd6adb9a9f9b2b02fe60
             patch LMAO/example_adder.hell < malbolge-1000.patch
             make -C LMAO
 
-            assembled=0
             : > assemble.log
-            for attempt in $(seq 1 12); do
-              echo "=== assemble attempt $attempt ===" | tee -a assemble.log
-              if ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell 2>&1 | tee -a assemble.log; then
-                assembled=1
-                break
-              fi
-              sleep 1
-            done
-            test "$assembled" -eq 1
-
+            ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell 2>&1 | tee -a assemble.log
             cp LMAO/example_adder.hell adder_0_to_1000.hell
             wc -c adder_0_to_1000.mb | tee -a assemble.log
             python3 - <<'PY' | tee -a assemble.log
