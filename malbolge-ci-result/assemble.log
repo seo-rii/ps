@@ -1,7 +1,7 @@
 Error: Free space exceeded (Add Malbolge command).
-Internal error: Initialization code for memory cell 58648 could not be generated.
+Internal error: Initialization code for memory cell 58716 could not be generated.
 Error: Free space exceeded (Add Malbolge command).
-Internal error: Initialization code for memory cell 58648 could not be generated.
+Internal error: Initialization code for memory cell 58716 could not be generated.
 Error: Memory usage conflict while generating initial code.
 The program may be too big or .OFFSET may cause problems.
 This is LMAO v0.5.6b (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
