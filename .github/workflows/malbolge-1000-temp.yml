@@ -41,7 +41,7 @@ jobs:
 
             patch LMAO/example_adder.hell < malbolge-1000.patch
             : > assemble.log
-            ./LMAO/lmao -d -o adder_0_to_1000.mb LMAO/example_adder.hell 2>&1 | tee -a assemble.log
+            ./LMAO/lmao -f -d -o adder_0_to_1000.mb LMAO/example_adder.hell 2>&1 | tee -a assemble.log
             cp LMAO/example_adder.hell adder_0_to_1000.hell
             wc -c adder_0_to_1000.mb | tee -a assemble.log
             python3 - <<'PY' | tee -a assemble.log
