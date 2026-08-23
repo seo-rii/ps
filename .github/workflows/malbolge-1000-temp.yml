@@ -25,7 +25,7 @@ jobs:
           (
             set -euxo pipefail
             sudo apt-get update
-            sudo apt-get install -y flex bison
+            sudo apt-get install -y flex bison libfl-dev
             rm -rf LMAO malbolge-interpreter
             git clone https://github.com/esoteric-programmer/LMAO.git LMAO
             git -C LMAO checkout 859dc1ebd191f09b18c0bd6adb9a9f9b2b02fe60
