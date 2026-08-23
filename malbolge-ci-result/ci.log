@@ -1,26 +1,26 @@
 + sudo apt-get update
 Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
 Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
-Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
-Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
 Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
 Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
 Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
 Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
-Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [357 kB]
-Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [403 kB]
-Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1227 kB]
-Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [286 kB]
-Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [180 kB]
-Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1687 kB]
-Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [337 kB]
-Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
-Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1483 kB]
-Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [339 kB]
-Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.8 kB]
-Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
-Get:21 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5772 B]
-Get:22 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1227 kB]
+Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [286 kB]
+Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [180 kB]
+Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1687 kB]
+Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [337 kB]
+Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [388 kB]
+Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1483 kB]
+Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [339 kB]
+Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [12.8 kB]
+Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Get:19 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [5772 B]
+Get:20 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [12.6 kB]
+Get:21 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [357 kB]
+Get:22 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [403 kB]
 Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [967 kB]
 Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [205 kB]
 Get:25 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [46.4 kB]
@@ -30,7 +30,7 @@ Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Comp
 Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1385 kB]
 Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [320 kB]
 Get:31 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1408 B]
-Fetched 11.5 MB in 1s (7841 kB/s)
+Fetched 11.5 MB in 1s (8491 kB/s)
 Reading package lists...
 + sudo apt-get install -y flex bison
 Reading package lists...
@@ -67,8 +67,13 @@ gcc ../bin/bison.o ../bin/lex.o ../bin/globals.o ../bin/xlat.o ../bin/label.o ..
 make[1]: Leaving directory '/home/runner/work/ps/ps/LMAO/src'
 cp bin/lmao .
 make: Leaving directory '/home/runner/work/ps/ps/LMAO'
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
++ ./LMAO/lmao -f -o adder_0_to_1000.mb LMAO/example_adder.hell
 + tee assemble.log
+Error: Free space exceeded (Add Malbolge command).
+Internal error: Cannot generate initialization code for cell 58653.
+Error: Free space exceeded (Add Malbolge command).
+Internal error: Cannot generate initialization code for cell 58653.
+Warning: Memory usage conflict in fast mode. Retrying in normal mode...
 Error: Free space exceeded (Add Malbolge command).
 Internal error: Cannot generate initialization code for cell 58653.
 Error: Free space exceeded (Add Malbolge command).
