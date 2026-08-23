@@ -1,72 +1,58 @@
 --- /mnt/data/example_adder_original.hell	2026-08-23 09:38:14.498143555 +0000
-+++ /mnt/data/adder_0_to_1000_nocounter.hell	2026-08-23 09:41:00.458583132 +0000
-@@ -549,7 +549,28 @@
- 	NUMBER_READ_FLAG restore_initial_state
++++ /mnt/data/adder_0_to_1000_min.hell	2026-08-23 09:53:01.768097739 +0000
+@@ -563,9 +563,37 @@
+ // shift digit...
+ append_tmp_digit_to_first_number:
+ 	R_WAITING_FOR_FIRST_NUMBER_FLAG
++	// With valid inputs in [0,1000], a fourth digit can only occur for
++	// 1000.  Immediately before that digit is shifted in, DIGIT2 is 1.
++	// Its LOW half is therefore MovD, while it is zero before every
++	// digit of a <=999 input.  Probe it just before clear_n1_msd.
++	N1_DIGIT2_LOW n1_is_1000
++	MOVED clear_n1_msd
++
++n1_is_1000:
++	// ANY... is untouched during input. Toggle it once to remember
++	// that exactly one operand seen so far is 1000.
++	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG n1_1000_marked
++n1_1000_marked:
+ 	MOVED clear_n1_msd
  
- read_second_number:
--	// ADD NUMBERS AND PRINT RESULT
-+	// PRINT_ZERO_FLAG is untouched during input.  If both operands were
-+	// 1000, n2_fourth_digit advanced it once from MovD to Nop.
-+	PRINT_ZERO_FLAG not_both_thousands
-+both_thousands:
+ append_tmp_digit_to_second_number:
++	N2_DIGIT2_LOW n2_is_1000
++	MOVED clear_n2_msd
++
++n2_is_1000:
++	// If the first operand was not 1000, MovD branches and leaves the
++	// flag in Nop: exactly one 1000 has been seen.
++	// If it was already Nop, this is the second 1000.  In that case the
++	// low three digits are 000, so print the leading 2 immediately and
++	// reuse the normal three-digit printer.  The trailing newline input
++	// need not be consumed because the program halts after printing.
++	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG n2_only_1000
 +	ROT '2'<<1 R_ROT OUT ?- R_OUT
 +	R_ANY_DIGIT_HAS_BEEN_PRINTED_FLAG
 +	MOVED print_result
 +
-+not_both_thousands:
-+	// ANY_DIGIT_HAS_BEEN_PRINTED_FLAG is toggled for every operand that
-+	// was 1000, so Nop means exactly one and MovD means zero here.
-+	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG no_thousands
-+one_thousand:
-+	WAITING_FOR_FIRST_NUMBER_FLAG one_thousand_marked
-+one_thousand_marked:
-+	R_SUBROUTINE_FLAG3
-+	MOVED clear_tmp2
-+
-+no_thousands:
-+	// Restore ANY... from Nop to MovD for the ordinary output routine.
-+	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG no_thousands_restored
-+no_thousands_restored:
- 	R_SUBROUTINE_FLAG3
- 	MOVED clear_tmp2
- 
-@@ -563,9 +584,29 @@
- // shift digit...
- append_tmp_digit_to_first_number:
- 	R_WAITING_FOR_FIRST_NUMBER_FLAG
-+	// Before a valid fourth digit (only possible for 1000), the hundreds
-+	// digit is 1, whose LOW cycle is MovD.  The MSD is cleared immediately
-+	// afterwards anyway, so probing this destructive state costs no storage.
-+	N1_DIGIT2_LOW n1_fourth_digit
-+	MOVED clear_n1_msd
-+
-+n1_fourth_digit:
-+	// Mark operand 1 == 1000 by toggling ANY... from MovD to Nop.
-+	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG n1_fourth_marked
-+n1_fourth_marked:
- 	MOVED clear_n1_msd
- 
- append_tmp_digit_to_second_number:
-+	N2_DIGIT2_LOW n2_fourth_digit
-+	MOVED clear_n2_msd
-+
-+n2_fourth_digit:
-+	// Toggling ANY... gives parity of the number of 1000 operands.
-+	// If operand 1 was also 1000, mark the two-thousand case in PRINT_ZERO.
-+	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG n2_only_second
-+	PRINT_ZERO_FLAG n2_fourth_done
-+n2_only_second:
-+n2_fourth_done:
++n2_only_1000:
  	MOVED clear_n2_msd
  
  
-@@ -710,6 +751,9 @@
+@@ -710,6 +738,17 @@
  
  add_n2_digit2_to_n1_digit2_fin:
  	R_OVERFLOW
-+	WAITING_FOR_FIRST_NUMBER_FLAG print_leading_one
-+	WAITING_FOR_FIRST_NUMBER_FLAG check_normal_overflow
-+check_normal_overflow:
++	// If exactly one input was 1000, ANY... is Nop.  Probe it here:
++	// Nop falls through to print_leading_one and changes back to MovD.
++	// With no 1000 it is MovD, so branch to the ordinary overflow path.
++	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG no_input_1000
++	MOVED print_leading_one
++
++no_input_1000:
++	// The probe above changed MovD to Nop; restore it before the normal
++	// output routine so leading-zero suppression keeps its original state.
++	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG no_input_1000_restored
++no_input_1000_restored:
  	OVERFLOW print_leading_one
  	MOVED print_result
  
