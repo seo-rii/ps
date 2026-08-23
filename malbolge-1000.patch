@@ -1,86 +1,89 @@
---- /tmp/example_adder.hell	2026-08-22 08:34:01.654327120 +0000
-+++ /mnt/data/adder_0_to_1000.hell	2026-08-22 08:36:54.931022726 +0000
-@@ -163,6 +163,17 @@
+--- /mnt/data/example_adder_original.hell	2026-08-23 09:38:14.498143555 +0000
++++ /mnt/data/adder_0_to_1000_compact.hell	2026-08-23 09:38:56.112485676 +0000
+@@ -163,6 +163,12 @@
  	Nop/Nop/Nop/MovD
  	Jmp
  
-+// Count decimal digits of each operand.  The 4th invocation branches.
-+// Inputs are assumed to be canonical decimal integers in [0, 1000],
-+// so a fourth digit means exactly 1000.
-+N1_DIGIT_COUNT:
-+	Nop/Nop/Nop/MovD
-+	Jmp
-+
-+N2_DIGIT_COUNT:
++// Count digits of the current operand; the fourth digit branches.
++// The same counter is reset at the separator and reused for operand 2.
++DIGIT_COUNT:
 +	Nop/Nop/Nop/MovD
 +	Jmp
 +
  LOOP2_special:
  	Nop/MovD
  	Jmp
-@@ -549,10 +560,34 @@
+@@ -546,10 +552,37 @@
+ 
+ read_first_number:
+ 	R_NUMBER_READ_FLAG
++reset_digit_count:
++	DIGIT_COUNT digit_count_reset
++	MOVED reset_digit_count
++digit_count_reset:
  	NUMBER_READ_FLAG restore_initial_state
  
  read_second_number:
-+	// PRINT_ALL_DIGITS_LOOP is unused before output.  We repurpose its
-+	// 4-state cycle to count how many operands had a fourth digit:
-+	//   state 0 = none, state 1 = one, state 2 = two.
-+	// These three probes all leave it in state 3 before branching.
-+	PRINT_ALL_DIGITS_LOOP two_thousands
-+	PRINT_ALL_DIGITS_LOOP one_thousand
-+	PRINT_ALL_DIGITS_LOOP no_thousand
-+
-+// Exactly one operand was 1000.  WAITING_FOR_FIRST_NUMBER_FLAG is no
-+// longer needed for input selection, so reuse it as a force-leading-1 flag.
-+one_thousand:
-+	WAITING_FOR_FIRST_NUMBER_FLAG one_thousand
-+no_thousand:
-+	// state 3 is Nop; one more execution restores the original state 0
-+	// needed by the ordinary three-digit output loop.
-+	PRINT_ALL_DIGITS_LOOP print_result
- 	// ADD NUMBERS AND PRINT RESULT
- 	R_SUBROUTINE_FLAG3
- 	MOVED clear_tmp2
- 
-+// Both operands were 1000. Their retained low three digits are 000,
-+// so print the leading 2 and reuse the normal three-digit printer.
-+two_thousands:
-+	PRINT_ALL_DIGITS_LOOP print_result
+-	// ADD NUMBERS AND PRINT RESULT
++	// PRINT_ZERO_FLAG is untouched during input.  If both operands were
++	// 1000, n2_fourth_digit advanced it once from MovD to Nop.
++	PRINT_ZERO_FLAG not_both_thousands
++both_thousands:
 +	ROT '2'<<1 R_ROT OUT ?- R_OUT
 +	R_ANY_DIGIT_HAS_BEEN_PRINTED_FLAG
 +	MOVED print_result
 +
++not_both_thousands:
++	// ANY_DIGIT_HAS_BEEN_PRINTED_FLAG is toggled for every operand that
++	// was 1000, so Nop means exactly one and MovD means zero here.
++	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG no_thousands
++one_thousand:
++	// WAITING_FOR_FIRST_NUMBER_FLAG is no longer needed for input;
++	// toggle it to remember that a leading 1 must be forced after addition.
++	WAITING_FOR_FIRST_NUMBER_FLAG one_thousand_marked
++one_thousand_marked:
++	R_SUBROUTINE_FLAG3
++	MOVED clear_tmp2
++
++no_thousands:
++	// The branch above changed ANY... from MovD to Nop; restore it for output.
++	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG no_thousands_restored
++no_thousands_restored:
+ 	R_SUBROUTINE_FLAG3
+ 	MOVED clear_tmp2
  
- process_input_digit:
- 	NUMBER_READ_FLAG process_input_digit // a number has been read
-@@ -563,9 +598,21 @@
+@@ -563,9 +596,26 @@
  // shift digit...
  append_tmp_digit_to_first_number:
  	R_WAITING_FOR_FIRST_NUMBER_FLAG
-+	N1_DIGIT_COUNT n1_fourth_digit
++	DIGIT_COUNT n1_fourth_digit
 +	MOVED clear_n1_msd
 +
 +n1_fourth_digit:
-+	// For valid input, this is the first/second increment of the shared
-+	// thousand counter, so the referenced branch target is unreachable.
-+	PRINT_ALL_DIGITS_LOOP print_result
++	// Mark operand 1 == 1000 by toggling ANY... from MovD to Nop.
++	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG n1_fourth_marked
++n1_fourth_marked:
  	MOVED clear_n1_msd
  
  append_tmp_digit_to_second_number:
-+	N2_DIGIT_COUNT n2_fourth_digit
++	DIGIT_COUNT n2_fourth_digit
 +	MOVED clear_n2_msd
 +
 +n2_fourth_digit:
-+	PRINT_ALL_DIGITS_LOOP print_result
++	// Toggling ANY... gives parity of the number of 1000 operands.
++	// If operand 1 was also 1000, mark the two-thousand case in PRINT_ZERO.
++	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG n2_only_second
++	PRINT_ZERO_FLAG n2_fourth_done
++n2_only_second:
++n2_fourth_done:
  	MOVED clear_n2_msd
  
  
-@@ -710,6 +757,11 @@
+@@ -710,6 +760,10 @@
  
  add_n2_digit2_to_n1_digit2_fin:
  	R_OVERFLOW
-+	// If exactly one operand was 1000, force the leading 1.  Otherwise
-+	// consume/reset the reused flag and fall back to the original carry test.
++	// Exactly one 1000 toggled WAITING... to MovD before addition.
 +	WAITING_FOR_FIRST_NUMBER_FLAG print_leading_one
 +	WAITING_FOR_FIRST_NUMBER_FLAG check_normal_overflow
 +check_normal_overflow:
