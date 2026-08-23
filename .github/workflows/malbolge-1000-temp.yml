@@ -29,11 +29,19 @@ jobs:
             rm -rf LMAO malbolge-interpreter
             git clone https://github.com/esoteric-programmer/LMAO.git LMAO
             git -C LMAO checkout 859dc1ebd191f09b18c0bd6adb9a9f9b2b02fe60
-            patch LMAO/example_adder.hell < malbolge-1000.patch
             make -C LMAO
 
+            : > baseline.log
+            ./LMAO/lmao -d -o baseline.mb LMAO/example_adder.hell 2>&1 | tee -a baseline.log
+            wc -c baseline.mb baseline.mb.dbg 2>/dev/null | tee -a baseline.log || true
+            python3 - <<'PY' | tee -a baseline.log
+          p=open('baseline.mb','rb').read(); q=b''.join(p.split())
+          print('baseline_non_whitespace_cells=',len(q))
+          PY
+
+            patch LMAO/example_adder.hell < malbolge-1000.patch
             : > assemble.log
-            ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell 2>&1 | tee -a assemble.log
+            ./LMAO/lmao -d -o adder_0_to_1000.mb LMAO/example_adder.hell 2>&1 | tee -a assemble.log
             cp LMAO/example_adder.hell adder_0_to_1000.hell
             wc -c adder_0_to_1000.mb | tee -a assemble.log
             python3 - <<'PY' | tee -a assemble.log
@@ -82,7 +90,7 @@ jobs:
           set -euxo pipefail
           rm -rf malbolge-ci-result
           mkdir -p malbolge-ci-result
-          for f in adder_0_to_1000.mb adder_0_to_1000.hell assemble.log test.log ci.log ci-status.txt; do
+          for f in baseline.mb baseline.mb.dbg baseline.log adder_0_to_1000.mb adder_0_to_1000.mb.dbg adder_0_to_1000.hell assemble.log test.log ci.log ci-status.txt; do
             if [ -f "$f" ]; then cp "$f" malbolge-ci-result/; fi
           done
           git config user.name github-actions[bot]
