@@ -1,14 +1,14 @@
 + sudo apt-get update
 Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
-Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 Hit:6 https://packages.microsoft.com/repos/azure-cli noble InRelease
+Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
 Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
 Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
 Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
 Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
 Get:8 https://dl.google.com/linux/chrome-stable/deb stable InRelease [2548 B]
-Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [357 kB]
-Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [403 kB]
+Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [403 kB]
+Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [357 kB]
 Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1227 kB]
 Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [286 kB]
 Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [180 kB]
@@ -30,7 +30,7 @@ Get:28 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Comp
 Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1385 kB]
 Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [320 kB]
 Get:31 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1408 B]
-Fetched 11.5 MB in 1s (8461 kB/s)
+Fetched 11.5 MB in 1s (8465 kB/s)
 Reading package lists...
 + sudo apt-get install -y flex bison
 Reading package lists...
@@ -40,8 +40,27 @@ flex is already the newest version (2.6.4-8.2build1).
 bison is already the newest version (2:3.8.2+dfsg-1build2).
 0 upgraded, 0 newly installed, 0 to remove and 28 not upgraded.
 + rm -rf LMAO malbolge-interpreter
-+ git clone --depth 1 https://github.com/esoteric-programmer/LMAO.git LMAO
++ git clone https://github.com/esoteric-programmer/LMAO.git LMAO
 Cloning into 'LMAO'...
++ git -C LMAO checkout 859dc1ebd191f09b18c0bd6adb9a9f9b2b02fe60
+Note: switching to '859dc1ebd191f09b18c0bd6adb9a9f9b2b02fe60'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 859dc1e LMAO v0.5.6b
 + patch LMAO/example_adder.hell
 patching file LMAO/example_adder.hell
 + make -C LMAO
@@ -50,193 +69,29 @@ make -C src/
 make[1]: Entering directory '/home/runner/work/ps/ps/LMAO/src'
 mkdir ../bin/
 bison -d -v -o ../bin/lmao.tab.c lmao.y
+lmao.y:79.1-14: warning: deprecated directive: ‘%error_verbose’, use ‘%define parse.error verbose’ [-Wdeprecated]
+   79 | %error_verbose
+      | ^~~~~~~~~~~~~~
+      | %define parse.error verbose
+lmao.y: warning: fix-its can be applied.  Rerun with option '--update'. [-Wother]
 gcc -O3 -Wall -c -I. -o ../bin/bison.o ../bin/lmao.tab.c
 flex -o ../bin/lex.yy.c lmao.l
 gcc -O3 -Wall -c -I. -o ../bin/lex.o ../bin/lex.yy.c
-gcc -O3 -Wall -c -I. -o ../bin/globals.o globals.c
-gcc -O3 -Wall -c -I. -o ../bin/xlat.o xlat.c
-gcc -O3 -Wall -c -I. -o ../bin/label.o label.c
-gcc -O3 -Wall -c -I. -o ../bin/layout.o layout.c
-gcc -O3 -Wall -c -I. -o ../bin/prefix.o prefix.c
-gcc -O3 -Wall -c -I. -o ../bin/debug.o debug.c
-gcc -O3 -Wall -c -I. -o ../bin/cli.o cli.c
+gcc -O3 -Wall -c -I. -o ../bin/gen_init.o gen_init.c
+gcc -O3 -Wall -c -I. -o ../bin/initialize.o initialize.c
+initialize.c:31:32: warning: argument 1 of type ‘MemoryCell[59049]’ with mismatched bound [-Warray-parameter=]
+   31 | void update_offsets(MemoryCell memory[C2+1]){
+      |                     ~~~~~~~~~~~^~~~~~~~~~~~
+In file included from initialize.c:26:
+initialize.h:33:33: note: previously declared as ‘MemoryCell *’
+   33 | void update_offsets(MemoryCell* memory);
+      |                     ~~~~~~~~~~~~^~~~~~
 gcc -O3 -Wall -c -I. -o ../bin/main.o main.c
 gcc -O3 -Wall -c -I. -o ../bin/malbolge.o malbolge.c
-gcc -O3 -Wall -c -I. -o ../bin/initialize.o initialize.c
-gcc -O3 -Wall -c -I. -o ../bin/gen_init.o gen_init.c
-gcc ../bin/bison.o ../bin/lex.o ../bin/globals.o ../bin/xlat.o ../bin/label.o ../bin/layout.o ../bin/prefix.o ../bin/debug.o ../bin/cli.o ../bin/main.o ../bin/malbolge.o ../bin/initialize.o ../bin/gen_init.o -o ../bin/lmao
+gcc ../bin/bison.o ../bin/lex.o ../bin/gen_init.o ../bin/initialize.o ../bin/main.o ../bin/malbolge.o -o ../bin/lmao -lfl
+/usr/bin/ld: cannot find -lfl: No such file or directory
+collect2: error: ld returned 1 exit status
+make[1]: *** [Makefile:28: lmao] Error 1
 make[1]: Leaving directory '/home/runner/work/ps/ps/LMAO/src'
-cp bin/lmao .
+make: *** [Makefile:10: bin/lmao] Error 2
 make: Leaving directory '/home/runner/work/ps/ps/LMAO'
-+ assembled=0
-+ :
-++ seq 1 12
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 1 ==='
-+ tee -a assemble.log
-=== assemble attempt 1 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 2 ==='
-+ tee -a assemble.log
-=== assemble attempt 2 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 3 ==='
-+ tee -a assemble.log
-=== assemble attempt 3 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ tee -a assemble.log
-+ echo '=== assemble attempt 4 ==='
-=== assemble attempt 4 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 5 ==='
-+ tee -a assemble.log
-=== assemble attempt 5 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ tee -a assemble.log
-+ echo '=== assemble attempt 6 ==='
-=== assemble attempt 6 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 7 ==='
-+ tee -a assemble.log
-=== assemble attempt 7 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 8 ==='
-+ tee -a assemble.log
-=== assemble attempt 8 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 9 ==='
-+ tee -a assemble.log
-=== assemble attempt 9 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 10 ==='
-+ tee -a assemble.log
-=== assemble attempt 10 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 11 ==='
-+ tee -a assemble.log
-=== assemble attempt 11 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ for attempt in $(seq 1 12)
-+ echo '=== assemble attempt 12 ==='
-+ tee -a assemble.log
-=== assemble attempt 12 ===
-+ ./LMAO/lmao -o adder_0_to_1000.mb LMAO/example_adder.hell
-+ tee -a assemble.log
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Free space exceeded (Add Malbolge command).
-Internal error: Cannot generate initialization code for cell 58648.
-Error: Memory usage conflict while generating initialization code.
-The program may be too large, or a .OFFSET directive may conflict.
-This is LMAO v0.6.0 (Low-level Malbolge Assembler, Ooh!) by Matthias Lutter.
-+ sleep 1
-+ test 0 -eq 1
