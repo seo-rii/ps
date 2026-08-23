@@ -1,26 +1,6 @@
 --- /mnt/data/example_adder_original.hell	2026-08-23 09:38:14.498143555 +0000
-+++ /mnt/data/adder_0_to_1000_compact.hell	2026-08-23 09:38:56.112485676 +0000
-@@ -163,6 +163,12 @@
- 	Nop/Nop/Nop/MovD
- 	Jmp
- 
-+// Count digits of the current operand; the fourth digit branches.
-+// The same counter is reset at the separator and reused for operand 2.
-+DIGIT_COUNT:
-+	Nop/Nop/Nop/MovD
-+	Jmp
-+
- LOOP2_special:
- 	Nop/MovD
- 	Jmp
-@@ -546,10 +552,37 @@
- 
- read_first_number:
- 	R_NUMBER_READ_FLAG
-+reset_digit_count:
-+	DIGIT_COUNT digit_count_reset
-+	MOVED reset_digit_count
-+digit_count_reset:
++++ /mnt/data/adder_0_to_1000_nocounter.hell	2026-08-23 09:41:00.458583132 +0000
+@@ -549,7 +549,28 @@
  	NUMBER_READ_FLAG restore_initial_state
  
  read_second_number:
@@ -38,25 +18,26 @@
 +	// was 1000, so Nop means exactly one and MovD means zero here.
 +	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG no_thousands
 +one_thousand:
-+	// WAITING_FOR_FIRST_NUMBER_FLAG is no longer needed for input;
-+	// toggle it to remember that a leading 1 must be forced after addition.
 +	WAITING_FOR_FIRST_NUMBER_FLAG one_thousand_marked
 +one_thousand_marked:
 +	R_SUBROUTINE_FLAG3
 +	MOVED clear_tmp2
 +
 +no_thousands:
-+	// The branch above changed ANY... from MovD to Nop; restore it for output.
++	// Restore ANY... from Nop to MovD for the ordinary output routine.
 +	ANY_DIGIT_HAS_BEEN_PRINTED_FLAG no_thousands_restored
 +no_thousands_restored:
  	R_SUBROUTINE_FLAG3
  	MOVED clear_tmp2
  
-@@ -563,9 +596,26 @@
+@@ -563,9 +584,29 @@
  // shift digit...
  append_tmp_digit_to_first_number:
  	R_WAITING_FOR_FIRST_NUMBER_FLAG
-+	DIGIT_COUNT n1_fourth_digit
++	// Before a valid fourth digit (only possible for 1000), the hundreds
++	// digit is 1, whose LOW cycle is MovD.  The MSD is cleared immediately
++	// afterwards anyway, so probing this destructive state costs no storage.
++	N1_DIGIT2_LOW n1_fourth_digit
 +	MOVED clear_n1_msd
 +
 +n1_fourth_digit:
@@ -66,7 +47,7 @@
  	MOVED clear_n1_msd
  
  append_tmp_digit_to_second_number:
-+	DIGIT_COUNT n2_fourth_digit
++	N2_DIGIT2_LOW n2_fourth_digit
 +	MOVED clear_n2_msd
 +
 +n2_fourth_digit:
@@ -79,11 +60,10 @@
  	MOVED clear_n2_msd
  
  
-@@ -710,6 +760,10 @@
+@@ -710,6 +751,9 @@
  
  add_n2_digit2_to_n1_digit2_fin:
  	R_OVERFLOW
-+	// Exactly one 1000 toggled WAITING... to MovD before addition.
 +	WAITING_FOR_FIRST_NUMBER_FLAG print_leading_one
 +	WAITING_FOR_FIRST_NUMBER_FLAG check_normal_overflow
 +check_normal_overflow:
